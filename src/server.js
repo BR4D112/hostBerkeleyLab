@@ -16,8 +16,10 @@ const wss = new WebSocket.Server({ server });
 
 const servers = [
     { ip: '192.168.128.5', port: 5001, active: false, difference: 0 },
+    { ip: '192.168.128.5', port: 5002, active: false, difference: 0 },
 ];
 
+/*
 let activeServerNumbers = [
     { serverIp: '192.168.128.5:5001', number: Math.floor(Math.random() * 3001) - 1500 },
     { serverIp: '192.168.1.2:5000', number: Math.floor(Math.random() * 3001) - 1500 },
@@ -25,7 +27,7 @@ let activeServerNumbers = [
     { serverIp: '192.168.1.4:5000', number: Math.floor(Math.random() * 3001) - 1500 },
     { serverIp: '192.168.1.5:5000', number: Math.floor(Math.random() * 3001) - 1500 },
 ];
-
+*/
 let average = 0;
 
 
