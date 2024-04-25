@@ -45,6 +45,29 @@ function updateServerNumbers() {
     });
 }
 
+function updateServerDifferences() {
+    let sum = 0;
+    let count = 0;
+
+    // Calculate the sum of differences and the count of active servers
+    servers.forEach(server => {
+        if (server.active) {
+            sum += server.difference;
+            count++;
+        }
+    });
+
+    // Calculate the average difference
+    let average = sum / (count + 1);
+
+    // Subtract the average from each server's difference
+    servers.forEach(server => {
+        if (server.active) {
+            server.difference -= average;
+        }
+    });
+}
+
 function logServerNumbers() {
     let now = new Date();
     let timestamp = now.toISOString();
@@ -90,6 +113,7 @@ app.post('/timeReq', (req, res) => {
             })
             .then(function (response) {
                 server.difference = parseInt(response.data.difference);
+                console.log(date);
                 console.log(response.data);
                 console.log(server.difference);
             })
