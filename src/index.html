@@ -47,22 +47,21 @@
             const servers = JSON.parse(event.data);
             const table = document.getElementById('servers');
 
-            // Clear the current list
-            while (table.rows.length > 1) {
-                table.deleteRow(1);
-            }
-
             // Add each server to the list
             for (let server of servers) {
-                const row = table.insertRow();
-                const ipCell = row.insertCell();
-                const portCell = row.insertCell();
-                const statusCell = row.insertCell();
+                const id = `${server.ip}:${server.port}`;
 
-                const [ip, port] = server.serverIp.split(':');
-                ipCell.textContent = ip;
-                portCell.textContent = port;
-                statusCell.textContent = server.number >= 0 ? 'Active' : 'Inactive';
+                let row = document.getElementById(id);
+                if (!row) {
+                    row = table.insertRow();
+                    row.id = id;
+                    row.insertCell().textContent = server.ip;
+                    row.insertCell().textContent = server.port;
+                    row.insertCell();
+                }
+
+                const statusCell = row.cells[2];
+                statusCell.textContent = server.active ? 'Active' : 'Inactive';
             }
         });
 
