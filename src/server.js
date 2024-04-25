@@ -17,7 +17,7 @@ const wss = new WebSocket.Server({ server });
 
 // List of servers to monitor
 const servers = [
-    { ip: '127.0.0.1', port: 8000 },
+    { ip: '192.168.128.5', port: 3400 },
     // Add more servers as needed
 ];
 

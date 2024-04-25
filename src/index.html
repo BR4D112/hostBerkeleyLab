@@ -1,10 +1,32 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>WebSocket Test</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            border: 1px solid black;
+            padding: 5px;
+            text-align: left;
+        }
+    </style>
 </head>
+
 <body>
-    <div id="logs"></div>
+    <table id="servers">
+        <tr>
+            <th>IP</th>
+            <th>Port</th>
+            <th>Status</th>
+        </tr>
+        <!-- Rows will be added here dynamically -->
+    </table>
     <script>
         // Connect to the WebSocket server
         const socket = new WebSocket('ws://localhost:8999');
@@ -15,10 +37,25 @@
         });
 
         // Listen for messages
+        // Listen for messages
         socket.addEventListener('message', (event) => {
             console.log('Message from server: ', event.data);
-            document.getElementById('logs').innerHTML += `<p>${event.data}</p>`;
+            const data = event.data.split(' ');
+            const ip = data[2];
+            const port = data[4];
+            const status = data[6];
+            const table = document.getElementById('servers');
+            let row = Array.from(table.rows).find(r => r.cells[0].textContent === ip && r.cells[1].textContent === port);
+            if (!row) {
+                row = table.insertRow(-1);
+                row.insertCell(0).textContent = ip;
+                row.insertCell(1).textContent = port;
+                row.insertCell(2).textContent = status;
+            } else {
+                row.cells[2].textContent = status;
+            }
         });
     </script>
 </body>
+
 </html>
