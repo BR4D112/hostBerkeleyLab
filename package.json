@@ -9,6 +9,7 @@
   "author": "BR4D112",
   "license": "ISC",
   "dependencies": {
+    "dotenv": "16.4.5",
     "pm2": "5.3.1"
   }
 }

@@ -7,6 +7,7 @@
 </head>
 
 <body>
+    <script src="https://cdn.socket.io/socket.io-4.0.1.min.js"></script>
     <div class="column-container">
         <div class="column-left">
             <p class="wide-letters">M O N I T O R</p>
@@ -32,6 +33,16 @@
         // Connect to the WebSocket server
         const socket = new WebSocket('ws://localhost:8999');
 
+        const logList = document.getElementById('log-list');
+
+        // Escuchar mensajes de log desde el servidor
+        socket.on('log', function (message) {
+            const logConsole = document.querySelector('.log-console');
+            const p = document.createElement('p');
+            p.classList.add('console-text');
+            p.textContent = `[${getFormattedDate()}] ${message.data}`;
+            logConsole.appendChild(p);
+        });
         // Listen for messages
         socket.addEventListener('message', (event) => {
             console.log('Message from server: ', event.data);
@@ -45,7 +56,7 @@
 
             function getFormattedDate() {
                 const now = new Date();
-                return `[${ now.getDate() }/${ now.getMonth() + 1 }/${ now.getFullYear() } ${ now.getHours() }:${ now.getMinutes() }:${ now.getSeconds() }]`;
+                return `[${now.getDate()}/${now.getMonth() + 1}/${now.getFullYear()} ${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}]`;
             }
 
             // Update the server list

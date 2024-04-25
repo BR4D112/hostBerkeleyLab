@@ -5,7 +5,6 @@ const path = require('path');
 const net = require('net');
 const axios = require('axios');
 const bodyParser = require('body-parser');
-
 const app = express();
 
 app.use(express.static(path.join(__dirname, 'public')));
@@ -34,15 +33,13 @@ let average = 0;
 function updateServerDifferences() {
     let sum = 0;
     let count = 0;
-
-    
-
-    // Calculate the sum of differences and the count of active servers
+     // Calculate the sum of differences and the count of active servers
     servers.forEach(server => {
         if (server.active) {
             sum += server.difference;
             count++;
             console.log(`Primera diferencia Server ${server.ip}:${server.port} difference: ${server.difference}`);
+            sendLog(`LOG [${getFormattedDate().date}] ${server.ip} set new diference`);
         }
     });
 
@@ -69,6 +66,7 @@ function logServerNumbers() {
     }
 
     console.log(logMessage);
+    sendLog(logMessage);
 }
 /*
 // Changed from GET to POST
@@ -139,6 +137,7 @@ app.post('/timeReq', (req, res) => {
                 })
                 .then(function (response) {
                     console.log('Difference updated successfully');
+                    sendLog(`LOG [${date}] ${server.ip} has new difference update`);
                 })
                 .catch(function (error) {
                     console.log('Failed to update difference: ', error);
@@ -170,6 +169,13 @@ function getFormattedDate() {
     return {
         date: `${now.toISOString()}`
     }
+}
+function sendLog(messageIn){
+    wss.on("connection", (ws)=>{
+        ws.on('message', ()=>{
+            ws.send(`received: ${messageIn}`);
+        })
+    })
 }
 
 function checkServerConnection(server) {
