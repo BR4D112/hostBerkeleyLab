@@ -28,22 +28,6 @@ let activeServerNumbers = [
 
 let average = 0;
 
-function updateServerNumbers() {
-    let sum = 0;
-    for (let server of activeServerNumbers) {
-        sum += server.number;
-    }
-
-    average = Math.floor(sum / (activeServerNumbers.length + 1));
-
-    for (let server of activeServerNumbers) {
-        server.number -= average;
-    }
-
-    wss.clients.forEach((client) => {
-        client.send(JSON.stringify(activeServerNumbers));
-    });
-}
 
 function updateServerDifferences() {
     let sum = 0;
@@ -102,6 +86,30 @@ app.post('/difTime', (req, res) => {
 let firstTime;
 
 
+/*
+app.post('/timeReq', (req, res) => {
+    const date = new Date().toISOString();
+
+    servers.forEach(server => {
+        if (server.active) {
+            axios.get(`http://${server.ip}:${server.port}/getdiff`, {
+                data: { date: date }
+            })
+            .then(function (response) {
+                server.difference = parseInt(response.data.difference);
+                console.log(date);
+                console.log(response.data);
+                console.log(server.difference);
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
+        }
+    });
+
+    res.sendStatus(200);
+});
+*/
 
 app.post('/timeReq', (req, res) => {
     const date = new Date().toISOString();
@@ -116,6 +124,17 @@ app.post('/timeReq', (req, res) => {
                 console.log(date);
                 console.log(response.data);
                 console.log(server.difference);
+
+                // Send the updated difference to the Python server
+                axios.post(`http://${server.ip}:${server.port}/update-diff`, {
+                    difference: server.difference
+                })
+                .then(function (response) {
+                    console.log('Difference updated successfully');
+                })
+                .catch(function (error) {
+                    console.log('Failed to update difference: ', error);
+                });
             })
             .catch(function (error) {
                 console.log(error);
@@ -178,6 +197,5 @@ server.listen(process.env.PORT || 8999, () => {
     wss.clients.forEach((client) => {
         client.send(`Good Server started on port ${server.address().port}`);
     });
-    updateServerNumbers();
     console.log(`Good Server started on port ${server.address().port}`);
 });
