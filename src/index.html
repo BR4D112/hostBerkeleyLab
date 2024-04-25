@@ -27,6 +27,7 @@
         </tr>
         <!-- Rows will be added here dynamically -->
     </table>
+    <button id="sendDate">Send Date</button>
     <script>
         // Connect to the WebSocket server
         const socket = new WebSocket('ws://localhost:8999');
@@ -36,7 +37,6 @@
             socket.send('Hello Server!');
         });
 
-        // Listen for messages
         // Listen for messages
         socket.addEventListener('message', (event) => {
             console.log('Message from server: ', event.data);
@@ -54,6 +54,13 @@
             } else {
                 row.cells[2].textContent = status;
             }
+        });
+
+        // Send date when button is clicked
+        document.getElementById('sendDate').addEventListener('click', () => {
+            fetch('http://localhost:8999/timeReq', {
+                method: 'POST',
+            });
         });
     </script>
 </body>
