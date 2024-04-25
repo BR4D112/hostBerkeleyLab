@@ -10,8 +10,8 @@
     <div class="column-container">
         <div class="column-left">
             <p class="wide-letters">M O N I T O R</p>
-            <p class="hora">16:20:00</p>
-            <p class="time-label">hh : mm : ss</p>
+            <!--<p class="hora">16:20:00</p>
+            <p class="time-label">hh : mm : ss</p>-->
             <table id="servers">
                 <tr>
                     <th>IP</th>
@@ -40,8 +40,13 @@
             const logConsole = document.querySelector('.log-console');
             const p = document.createElement('p');
             p.classList.add('console-text');
-            p.textContent = `[${new Date().toLocaleTimeString()}] ${event.data}`;
+            p.textContent = `[${getFormattedDate()}] ${event.data}`;
             logConsole.appendChild(p);
+
+            function getFormattedDate() {
+                const now = new Date();
+                return `[${ now.getDate() }/${ now.getMonth() + 1 }/${ now.getFullYear() } ${ now.getHours() }:${ now.getMinutes() }:${ now.getSeconds() }]`;
+            }
 
             // Update the server list
             const servers = JSON.parse(event.data);
@@ -64,6 +69,8 @@
                 statusCell.textContent = server.active ? 'Active' : 'Inactive';
             }
         });
+
+
 
         // Send date when button is clicked
         document.getElementById('sendDate').addEventListener('click', () => {

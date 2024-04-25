@@ -35,21 +35,25 @@ function updateServerDifferences() {
     let sum = 0;
     let count = 0;
 
+    
+
     // Calculate the sum of differences and the count of active servers
     servers.forEach(server => {
         if (server.active) {
             sum += server.difference;
             count++;
+            console.log(`Primera diferencia Server ${server.ip}:${server.port} difference: ${server.difference}`);
         }
     });
 
     // Calculate the average difference
-    let average = sum / (count + 1);
+    let average = Math.floor(sum / (count + 1));
 
     // Subtract the average from each server's difference
     servers.forEach(server => {
         if (server.active) {
             server.difference -= average;
+            console.log(`Segunda diferencia Server ${server.ip}:${server.port} difference: ${server.difference}`);
         }
     });
 }
@@ -66,7 +70,7 @@ function logServerNumbers() {
 
     console.log(logMessage);
 }
-
+/*
 // Changed from GET to POST
 app.post('/difTime', (req, res) => {
     const cuerpoJSON = req.body;
@@ -84,7 +88,7 @@ app.post('/difTime', (req, res) => {
 
     console.log(`Nodo: ${nodo}, Diferencia de Tiempo: ${diferenciaTiempo}`);
 });
-
+*/
 let firstTime;
 
 
@@ -127,6 +131,8 @@ app.post('/timeReq', (req, res) => {
                 console.log(response.data);
                 console.log(server.difference);
 
+                updateServerDifferences();
+
                 // Send the updated difference to the Python server
                 axios.post(`http://${server.ip}:${server.port}/update-diff`, {
                     difference: server.difference
@@ -146,7 +152,7 @@ app.post('/timeReq', (req, res) => {
 
     res.sendStatus(200);
 });
-
+/*
 app.post('/setdifference/:id', (req, res) => {
     const server = activeServerNumbers.find(server => server.serverIp === req.params.id);
 
@@ -158,7 +164,7 @@ app.post('/setdifference/:id', (req, res) => {
 
     console.log(`ID received: ${req.params.id}`);
 });
-
+*/
 function getFormattedDate() {
     const now = new Date();
     return {
@@ -196,8 +202,13 @@ wss.on('connection', (ws) => {
 });
 
 server.listen(process.env.PORT || 8999, () => {
+    const message = `Good Server started on port ${server.address().port}`;
+    console.log(message);
+
+    // Enviar el mensaje inicial a todos los clientes conectados
     wss.clients.forEach((client) => {
-        client.send(`Good Server started on port ${server.address().port}`);
+        if (client.readyState === WebSocket.OPEN) {
+            client.send(JSON.stringify({ type: 'log', message }));
+        }
     });
-    console.log(`Good Server started on port ${server.address().port}`);
 });
