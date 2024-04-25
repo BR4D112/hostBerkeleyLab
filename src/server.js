@@ -51,13 +51,18 @@ function updateServerNumbers() {
         sum += server.number;
     }
 
-    average = sum / (activeServerNumbers.length + 1);
+    average = Math.floor(sum / (activeServerNumbers.length + 1));
 
     // Subtract the average from each number and update the list
     for (let server of activeServerNumbers) {
         server.number -= average;
     }
     console.log(activeServerNumbers);
+
+    // Send the updated list to all connected clients
+    wss.clients.forEach((client) => {
+        client.send(JSON.stringify(activeServerNumbers));
+    });
 }
 
 function logServerNumbers() {
@@ -91,7 +96,11 @@ app.get('/difTime', (req, res) => {
     if (nodo && diferenciaTiempo) {
         activeServerNumbers.push({ nodo, diferenciaTiempo });
     }
-    res.send('Number received. ${nodo} ${diferenciaTiempo}');
+    res.send(`Number received. ${nodo} ${diferenciaTiempo}`);
+
+    wss.clients.forEach((client) => {
+        client.send(`Number received. ${nodo} ${diferenciaTiempo}`);
+    });
 
     // Hacer algo con los datos desempaquetados
     console.log(`Nodo: ${nodo}, Diferencia de Tiempo: ${diferenciaTiempo}`);
@@ -102,22 +111,15 @@ let firstTime;
 
 app.post('/timeReq', (req, res) => {
     //sendDateToActiveServers();
-    firstTime = getFormattedDate();
+    firstTime = JSON.stringify(getFormattedDate());
+
+    // Send the log message to the client
+    wss.clients.forEach((client) => {
+        client.send(`Time send to all servers: ${firstTime}`);
+    });
+
     res.send(firstTime);
 });
-/*
-function sendDateToActiveServers() {
-    servers.forEach((server) => {
-        const socket = net.createConnection(server.port, server.ip);
-
-        socket.on('connect', () => {
-            // Send the current date to the server
-            socket.write(getFormattedDate());
-            socket.end();
-        });
-    });
-}
-*/
 
 
 
@@ -128,10 +130,10 @@ app.post('/setdifference/:id', (req, res) => {
     if (server) {
         // If the server is found, update the number and send a response
         //server.number = req.body.number;
-        res.send(`Difference between ${server.number}`);
+        res.json({ difference: `${server.number}` });
     } else {
         // If the server is not found, send a different response
-        res.send(`Not found ${req.params.id}`);
+        res.json({ difference: `Not found ${req.params.id}` });
     }
 
     // Log the received ID
@@ -141,11 +143,10 @@ app.post('/setdifference/:id', (req, res) => {
 
 function getFormattedDate() {
     const now = new Date();
-    mydate = `[${now.getDate()}/${now.getMonth() + 1}/${now.getFullYear()}-${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}]`;
     return {
-        date: mydate
+        date: `${now.toISOString()}`
     }
-  }
+}
 
 
 wss.on('connection', (ws) => {
@@ -155,10 +156,16 @@ wss.on('connection', (ws) => {
         console.log('received: %s', message);
         ws.send(`received: ${message}`);
     });
+
+    // Send the current list to the client when they connect
+    ws.send(JSON.stringify(activeServerNumbers));
 });
 
 // Start the server
 server.listen(process.env.PORT || 8999, () => {
-    console.log(`Server started on port ${server.address().port}`);
+    wss.clients.forEach((client) => {
+        client.send(`Good Server started on port ${server.address().port}`);
+    });
     updateServerNumbers();
+    console.log(`Good Server started on port ${server.address().port}`);
 });

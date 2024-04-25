@@ -3,56 +3,66 @@
 
 <head>
     <title>WebSocket Test</title>
-    <style>
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        th,
-        td {
-            border: 1px solid black;
-            padding: 5px;
-            text-align: left;
-        }
-    </style>
+    <link rel="stylesheet" type="text/css" href="styles.css">
 </head>
 
 <body>
-    <table id="servers">
-        <tr>
-            <th>IP</th>
-            <th>Port</th>
-            <th>Status</th>
-        </tr>
-        <!-- Rows will be added here dynamically -->
-    </table>
-    <button id="sendDate">Send Date</button>
+    <div class="column-container">
+        <div class="column-left">
+            <p class="wide-letters">M O N I T O R</p>
+            <p class="hora">16:20:00</p>
+            <p class="time-label">hh : mm : ss</p>
+            <table id="servers">
+                <tr>
+                    <th>IP</th>
+                    <th>Port</th>
+                    <th>Status</th>
+                </tr>
+                <!-- Rows will be added here dynamically -->
+            </table>
+            <button id="sendDate">Berkeley</button>
+        </div>
+        <div class="column-right">
+            <div class="log-console">
+                <p class="log-bottom-text">$ c l i e n t _ l o g > _</p>
+            </div>
+        </div>
+    </div>
     <script>
         // Connect to the WebSocket server
         const socket = new WebSocket('ws://localhost:8999');
 
-        // Connection opened
-        socket.addEventListener('open', (event) => {
-            socket.send('Hello Server!');
-        });
-
         // Listen for messages
         socket.addEventListener('message', (event) => {
             console.log('Message from server: ', event.data);
-            const data = event.data.split(' ');
-            const ip = data[2];
-            const port = data[4];
-            const status = data[6];
+
+            // Add the message to the log console
+            const logConsole = document.querySelector('.log-console');
+            const p = document.createElement('p');
+            p.classList.add('console-text');
+            p.textContent = `[${new Date().toLocaleTimeString()}] ${event.data}`;
+            logConsole.appendChild(p);
+
+            // Update the server list
+            const servers = JSON.parse(event.data);
             const table = document.getElementById('servers');
-            let row = Array.from(table.rows).find(r => r.cells[0].textContent === ip && r.cells[1].textContent === port);
-            if (!row) {
-                row = table.insertRow(-1);
-                row.insertCell(0).textContent = ip;
-                row.insertCell(1).textContent = port;
-                row.insertCell(2).textContent = status;
-            } else {
-                row.cells[2].textContent = status;
+
+            // Clear the current list
+            while (table.rows.length > 1) {
+                table.deleteRow(1);
+            }
+
+            // Add each server to the list
+            for (let server of servers) {
+                const row = table.insertRow();
+                const ipCell = row.insertCell();
+                const portCell = row.insertCell();
+                const statusCell = row.insertCell();
+
+                const [ip, port] = server.serverIp.split(':');
+                ipCell.textContent = ip;
+                portCell.textContent = port;
+                statusCell.textContent = server.number >= 0 ? 'Active' : 'Inactive';
             }
         });
 
