@@ -54,10 +54,10 @@ function updateServerDifferences() {
     });
 }
 
-function createServer() {
+function createServer(id) {
     lastPort += 1; // Incrementar el puerto
     const ip = '192.168.128.4'; // IP inicial
-    const newServer = { ip: ip, port: lastPort, active: false, difference: 0 };
+    const newServer = { ip: ip, id: id, port: lastPort, active: false, difference: 0 };
     servers.push(newServer);
 
     const scriptPath = path.join(__dirname, 'serverCreator.sh');
@@ -93,7 +93,7 @@ function logServerNumbers() {
 let firstTime;
 
 app.post('/createServer', (req, res) => {
-    const newServer = createServer();
+    const newServer = createServer(req.body.id);
     res.json(newServer);
 });
 

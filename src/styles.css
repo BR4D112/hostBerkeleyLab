@@ -130,3 +130,26 @@ body {
     background-color: #2d2d2d;
 }
 
+#serverId {
+    font-family: 'Roboto Mono', monospace;
+    color: #fff;
+    background-color: #1a1a1a;
+    border: none;
+    padding: 10px 20px;
+    margin-top: 20px;
+    width: 100%;
+}
+
+#serverId::placeholder {
+    color: #7f7f7f;
+}
+
+#serverId:focus {
+    outline: none;
+    background-color: #2d2d2d;
+}
+
+.input-container {
+    display: flex;
+    justify-content: space-between;
+}
