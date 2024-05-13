@@ -1,4 +1,7 @@
 const express = require('express');
+//const path = require('path');
+const cors = require('cors');
+const { exec } = require('child_process');
 const http = require('http');
 const WebSocket = require('ws');
 const path = require('path');
@@ -7,26 +10,22 @@ const axios = require('axios');
 const bodyParser = require('body-parser');
 const app = express();
 
+app.use(cors());
+
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(bodyParser.json());
 
 const server = http.createServer(app);
 const wss = new WebSocket.Server({ server });
 
+let lastPort = 5123; // Puerto inicial crear server
+
+
 const servers = [
-    { ip: '192.168.128.5', port: 5001, active: false, difference: 0 },
-    { ip: '192.168.128.5', port: 5002, active: false, difference: 0 },
+    { ip: '192.168.128.4', port: 5001, active: false, difference: 0 },
+    { ip: '192.168.128.4', port: 5002, active: false, difference: 0 },
 ];
 
-/*
-let activeServerNumbers = [
-    { serverIp: '192.168.128.5:5001', number: Math.floor(Math.random() * 3001) - 1500 },
-    { serverIp: '192.168.1.2:5000', number: Math.floor(Math.random() * 3001) - 1500 },
-    { serverIp: '192.168.1.3:5000', number: Math.floor(Math.random() * 3001) - 1500 },
-    { serverIp: '192.168.1.4:5000', number: Math.floor(Math.random() * 3001) - 1500 },
-    { serverIp: '192.168.1.5:5000', number: Math.floor(Math.random() * 3001) - 1500 },
-];
-*/
 let average = 0;
 
 
@@ -55,6 +54,28 @@ function updateServerDifferences() {
     });
 }
 
+function createServer() {
+    lastPort += 1; // Incrementar el puerto
+    const ip = '192.168.128.4'; // IP inicial
+    const newServer = { ip: ip, port: lastPort, active: false, difference: 0 };
+    servers.push(newServer);
+
+    const scriptPath = path.join(__dirname, 'serverCreator.sh');
+
+    // Ejecutar el script con ip y port como parámetros
+    exec(`${scriptPath} ${lastPort}`, (error, stdout, stderr) => {
+        if (error) {
+            console.error(`Error al ejecutar el script: ${error}`);
+            return;
+        }
+        console.log(`Salida del script: ${stdout}`);
+        console.error(`Errores del script: ${stderr}`);
+    });
+    console.log(servers);    
+
+    return newServer;
+}
+
 function logServerNumbers() {
     let now = new Date();
     let timestamp = now.toISOString();
@@ -68,52 +89,15 @@ function logServerNumbers() {
     console.log(logMessage);
     sendLog(logMessage);
 }
-/*
-// Changed from GET to POST
-app.post('/difTime', (req, res) => {
-    const cuerpoJSON = req.body;
-    const nodo = cuerpoJSON.nodo;
-    const diferenciaTiempo = cuerpoJSON.diferencia_tiempo;
 
-    if (nodo && diferenciaTiempo) {
-        activeServerNumbers.push({ nodo, diferenciaTiempo });
-    }
-    res.send(`Number received. ${nodo} ${diferenciaTiempo}`);
-
-    wss.clients.forEach((client) => {
-        client.send(`Number received. ${nodo} ${diferenciaTiempo}`);
-    });
-
-    console.log(`Nodo: ${nodo}, Diferencia de Tiempo: ${diferenciaTiempo}`);
-});
-*/
 let firstTime;
 
-
-/*
-app.post('/timeReq', (req, res) => {
-    const date = new Date().toISOString();
-
-    servers.forEach(server => {
-        if (server.active) {
-            axios.get(`http://${server.ip}:${server.port}/getdiff`, {
-                data: { date: date }
-            })
-            .then(function (response) {
-                server.difference = parseInt(response.data.difference);
-                console.log(date);
-                console.log(response.data);
-                console.log(server.difference);
-            })
-            .catch(function (error) {
-                console.log(error);
-            });
-        }
-    });
-
-    res.sendStatus(200);
+app.post('/createServer', (req, res) => {
+    const newServer = createServer();
+    res.json(newServer);
 });
-*/
+
+
 
 app.post('/timeReq', (req, res) => {
     const date = new Date().toISOString();

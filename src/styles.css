@@ -96,6 +96,23 @@ body {
     background-color: #2d2d2d;
 }
 
+#addServer {
+    font-family: 'Roboto Mono', monospace;
+    color: #fff;
+    background-color: #1a1a1a;
+    border: none;
+    padding: 10px 20px;
+    margin-top: 20px;
+    cursor: pointer;
+    text-align: center;
+    display: inline-block;
+    width: 49%;
+}
+
+#addServer:hover {
+    background-color: #2d2d2d;
+}
+
 #sendDate {
     font-family: 'Roboto Mono', monospace;
     color: #fff;
@@ -105,10 +122,11 @@ body {
     margin-top: 20px;
     cursor: pointer;
     text-align: center;
-    display: block;
-    width: 100%;
+    display: inline-block;
+    width: 49%;
 }
 
 #sendDate:hover {
     background-color: #2d2d2d;
 }
+

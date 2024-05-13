@@ -22,6 +22,7 @@
                 <!-- Rows will be added here dynamically -->
             </table>
             <button id="sendDate">Berkeley</button>
+            <button id="addServer">Agregar Servidor</button> <!-- New button -->
         </div>
         <div class="column-right">
             <div class="log-console">
@@ -36,6 +37,7 @@
         const logList = document.getElementById('log-list');
 
         // Escuchar mensajes de log desde el servidor
+        /*
         socket.on('log', function (message) {
             const logConsole = document.querySelector('.log-console');
             const p = document.createElement('p');
@@ -43,6 +45,7 @@
             p.textContent = `[${getFormattedDate()}] ${message.data}`;
             logConsole.appendChild(p);
         });
+        */
         // Listen for messages
         socket.addEventListener('message', (event) => {
             console.log('Message from server: ', event.data);
@@ -81,13 +84,21 @@
             }
         });
 
-
-
         // Send date when button is clicked
         document.getElementById('sendDate').addEventListener('click', () => {
             fetch('http://localhost:8999/timeReq', {
                 method: 'POST',
             });
+        });
+
+        document.getElementById('addServer').addEventListener('click', function () {
+            fetch('http://localhost:8999/createServer', {
+                method: 'POST',
+            })
+                .then(response => response.json())
+                .then(newServer => {
+                    console.log('New server created:', newServer);
+                });
         });
     </script>
 </body>
