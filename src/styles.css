@@ -83,7 +83,7 @@ body {
 }
 
 #servers th, #servers td {
-    border: 1px solid #fff;
+    border: 1px solid #242424;
     padding: 10px;
     text-align: center;
 }
@@ -157,4 +157,21 @@ body {
 img {
     max-height: 1em;
     vertical-align: middle;
+}
+
+#stopServer {
+    font-family: 'Roboto Mono', monospace;
+    color: #fff;
+    background-color: #1a1a1a; /* Un poco más oscuro que #2d2d2d */
+    border: none;
+    padding: 10px 20px;
+    margin-top: 20px;
+    cursor: pointer;
+    text-align: center;
+    display: inline-block;
+    width: 49%;
+}
+
+#stopServer:hover {
+    background-color: #2d2d2d; /* El mismo color que el fondo de la tabla */
 }

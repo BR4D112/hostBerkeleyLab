@@ -23,7 +23,7 @@
                 </tr>
                 <!-- Rows will be added here dynamically -->
             </table>
-            <button id="sendDate">Berkeley</button>
+            <button id="sendDate" >Berkeley</button>
             <div class="input-container">
                 <input type="text" id="serverId" placeholder="Enter server ID">
                 <button id="addServer">Agregar Servidor</button>
@@ -36,6 +36,7 @@
         </div>
     </div>
     <script>
+        document.getElementById('sendDate').style.display = 'none';
         // Connect to the WebSocket server
         const socket = new WebSocket('ws://localhost:8999');
 
@@ -86,6 +87,23 @@
                     const actionCell = row.insertCell(); // New cell for action button
                     const stopButton = document.createElement('button');
                     stopButton.textContent = 'Detener';
+
+                    stopButton.style.backgroundColor = '#1a1a1a'; // Set the background color
+                    stopButton.style.color = '#fff'; // Set the text color
+                    stopButton.style.border = 'none'; // Remove the border
+                    stopButton.style.padding = '10px 20px'; // Add some padding
+                    stopButton.style.cursor = 'pointer'; // Change the cursor to a pointer
+                    stopButton.style.textAlign = 'center'; // Center the text
+                    stopButton.style.display = 'inline-block'; // Make the button inline-block
+                    stopButton.style.width = '49%'; // Set the width of the button
+
+                    stopButton.addEventListener('mouseover', function () {
+                        stopButton.style.backgroundColor = '#242424'; // Change the background color when mouse is over
+                    });
+
+                    stopButton.addEventListener('mouseout', function () {
+                        stopButton.style.backgroundColor = '#1a1a1a'; // Change the background color back when mouse is out
+                    });
                     stopButton.addEventListener('click', function () {
                         fetch('http://localhost:8999/stopServer', {
                             method: 'POST',
