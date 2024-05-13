@@ -22,8 +22,8 @@ let lastPort = 5123; // Puerto inicial crear server
 
 
 const servers = [
-    { ip: '192.168.128.4', port: 5001, active: false, difference: 0 },
-    { ip: '192.168.128.4', port: 5002, active: false, difference: 0 },
+    //{ ip: '192.168.128.4', port: 5001, active: false, difference: 0 },
+    //{ ip: '192.168.128.4', port: 5002, active: false, difference: 0 },
 ];
 
 let average = 0;
