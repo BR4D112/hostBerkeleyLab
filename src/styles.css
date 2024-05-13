@@ -153,3 +153,8 @@ body {
     display: flex;
     justify-content: space-between;
 }
+
+img {
+    max-height: 1em;
+    vertical-align: middle;
+}

@@ -57,7 +57,7 @@ function updateServerDifferences() {
 function createServer(id) {
     lastPort += 1; // Incrementar el puerto
     const ip = '192.168.128.4'; // IP inicial
-    const newServer = { ip: ip, id: id, port: lastPort, active: false, difference: 0 };
+    const newServer = { ip: ip, id: id, port: lastPort, active: false, leadStatus: false };
     servers.push(newServer);
 
     const scriptPath = path.join(__dirname, 'serverCreator.sh');
@@ -95,6 +95,10 @@ let firstTime;
 app.post('/createServer', (req, res) => {
     const newServer = createServer(req.body.id);
     res.json(newServer);
+});
+
+app.post('/stopServer', (req, res) => {
+    res.json(req.body.port);
 });
 
 
@@ -135,19 +139,27 @@ app.post('/timeReq', (req, res) => {
 
     res.sendStatus(200);
 });
-/*
-app.post('/setdifference/:id', (req, res) => {
-    const server = activeServerNumbers.find(server => server.serverIp === req.params.id);
 
-    if (server) {
-        res.json({ difference: `${server.number}` });
+app.post('/leadStatus', (req, res) => {
+    const { port, leadStatus } = req.body;
+    console.log('cambiando el estado a lider');
+
+    // Convert port to a number
+    const portNumber = parseInt(port, 10);
+    console.log(portNumber);
+
+    // Find the server with the specified port
+    const server = servers.find(server => server.port === portNumber);
+    console.log(servers);
+    if (!server) {
+        res.status(404).json({ message: 'Server not found' });
     } else {
-        res.json({ difference: `Not found ${req.params.id}` });
+        // Update the leadStatus of the server
+        server.leadStatus = leadStatus;
+        res.json({ message: 'Lead status updated successfully' });
     }
-
-    console.log(`ID received: ${req.params.id}`);
 });
-*/
+
 function getFormattedDate() {
     const now = new Date();
     return {

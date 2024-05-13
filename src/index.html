@@ -18,6 +18,8 @@
                     <th>ID</th>
                     <th>Port</th>
                     <th>Status</th>
+                    <th>Leader</th>
+                    <th>Action</th>
                 </tr>
                 <!-- Rows will be added here dynamically -->
             </table>
@@ -80,10 +82,31 @@
                     row.insertCell().textContent = server.id;
                     row.insertCell().textContent = server.port;
                     row.insertCell();
+                    row.insertCell();
+                    const actionCell = row.insertCell(); // New cell for action button
+                    const stopButton = document.createElement('button');
+                    stopButton.textContent = 'Detener';
+                    stopButton.addEventListener('click', function () {
+                        fetch('http://localhost:8999/stopServer', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({ port: server.port }),
+                        })
+                            .then(response => response.json())
+                            .then(data => {
+                                console.log('Server stopped:', data);
+                            });
+                    });
+                    actionCell.appendChild(stopButton);
                 }
 
                 const statusCell = row.cells[2];
-                statusCell.textContent = server.active ? 'Active' : 'Inactive';
+                statusCell.innerHTML = server.active ? '<img src="../utils/green.png" alt="True">' : '<img src="../utils/red.png" alt="False">';
+
+                const leadStatusCell = row.cells[3]; // New cell for leadStatus
+                leadStatusCell.innerHTML = server.leadStatus ? '<img src="../utils/crown.png" alt="True">' : '';
             }
         });
 
